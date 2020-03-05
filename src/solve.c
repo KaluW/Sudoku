@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <tice.h>
 
+#include <fontlibc.h>
+
 uint8_t playGrid[GRID_WIDTH][GRID_WIDTH] = {
 	{0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0},
@@ -85,12 +87,11 @@ bool FindUnassignedLocation(uint8_t grid[GRID_WIDTH][GRID_WIDTH], uint8_t *rowp,
 
 bool SolveSudoku(uint8_t grid[GRID_WIDTH][GRID_WIDTH]) {
 	uint8_t row = 0, col = 0, num, sequence;
-	
+	//displayGrid(grid);
 	if (!FindUnassignedLocation(grid, &row, &col)) //No unassigned locations = solved
-		return true;
-	
-	randSeq();	
-	for (sequence = 0; sequence < GRID_WIDTH; sequence ++) {
+			return true;
+	randSeq();		
+	for (sequence = 0; sequence < 9; sequence ++) {
 		
 		num = seq[sequence];
 		
@@ -106,7 +107,7 @@ bool SolveSudoku(uint8_t grid[GRID_WIDTH][GRID_WIDTH]) {
 	return false; // this triggers backtrackiing
 }
 
-void GenerateSudoku(uint8_t playGrid[GRID_WIDTH][GRID_WIDTH], uint8_t solvedGrid[GRID_WIDTH][GRID_WIDTH]) {
+void GenerateSudoku(void) {
 	uint8_t i, row, col;
 	for(i = 0; i <= LEVEL; i ++) {
 		row = randInt(0,8);
@@ -116,4 +117,25 @@ void GenerateSudoku(uint8_t playGrid[GRID_WIDTH][GRID_WIDTH], uint8_t solvedGrid
 		playGrid[row][col] = solvedGrid[row][col];
 		playGrid[8-row][8-col] = solvedGrid[8-row][8-col];
 	}
+}
+
+bool isWin(void)
+{
+	uint8_t row, col, num;
+	for(row = 0; row < GRID_WIDTH; row ++)
+	{
+		for(col = 0; col < GRID_WIDTH; col++)
+		{
+			//Have to set grid value to 0 in order to properly use the logic in isSafe()
+			num = solvedGrid[row][col];
+			solvedGrid[row][col] = UNASSIGNED;
+			if(!isSafe(solvedGrid, row, col, num))
+			{
+				solvedGrid[row][col] = num; //set it back to its original value
+				return false; //no win
+			}
+			solvedGrid[row][col] = num; //set it back to its original value
+		}
+	}
+	return true; //All values are safe - win!
 }

@@ -19,7 +19,7 @@
 
 void menu(void);
 void play(void);
-void displayGrid(uint8_t playGrid[GRID_WIDTH][GRID_WIDTH], uint8_t solvedGrid[GRID_WIDTH][GRID_WIDTH]);
+void displayGrid(void);
 	
 void main()
 {
@@ -38,14 +38,21 @@ void menu(void)
 
 void play(void) {
 	
-	SolveSudoku(solvedGrid); 
-	GenerateSudoku(playGrid, solvedGrid);
-	
-	displayGrid(playGrid, solvedGrid);
+	if(SolveSudoku(solvedGrid) == true);
+		//GenerateSudoku();
+		displayGrid();
+	fontlib_SetCursorPosition(5, 5);
+	fontlib_SetColors(BLACK, WHITE);
+    if(isWin())
+	{
+		fontlib_DrawString("Win!");
+	} else {
+		fontlib_DrawString("Lose!");
+	}
 	while (!os_GetCSC());
 }
 	
-void displayGrid(uint8_t playGrid[GRID_WIDTH][GRID_WIDTH], uint8_t solvedGrid[GRID_WIDTH][GRID_WIDTH]) {
+void displayGrid(void) {
 	
 	uint8_t row, col;
 	uint8_t i, j;
@@ -67,13 +74,13 @@ void displayGrid(uint8_t playGrid[GRID_WIDTH][GRID_WIDTH], uint8_t solvedGrid[GR
 			    (col / 3 + 1 == 2 && (row / 3 + 1 == 1 || row / 3 + 1 == 3)))
 				fontlib_SetBackgroundColor(GRAY);
 				
-			if (playGrid[row][col] != UNASSIGNED)
+			if (playGrid[row][col] != UNASSIGNED) 
 			{
 				if (solvedGrid[row][col] != UNASSIGNED)
 					fontlib_SetForegroundColor(BLUE);
 				
 				fontlib_SetCursorPosition(col*20+SUDOKUDRAWX + 7, row*20+SUDOKUDRAWY);
-				fontlib_DrawUInt(playGrid[row][col], 1);
+				fontlib_DrawUInt(solvedGrid[row][col], 1);
 			}
 		}
 	}
