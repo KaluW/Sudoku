@@ -19,7 +19,8 @@
 
 void menu(void);
 void play(void);
-void displayGrid(void);
+void gridDisplay(void);
+void updateGrid(void);
 	
 void main()
 {
@@ -38,9 +39,12 @@ void menu(void)
 
 void play(void) {
 	
-	if(SolveSudoku(solvedGrid) == true);
-		//GenerateSudoku();
-		displayGrid();
+	SolveSudoku();
+	GenerateSudoku();
+	
+	gridDisplay();
+	updateGrid();
+	
 	fontlib_SetCursorPosition(5, 5);
 	fontlib_SetColors(BLACK, WHITE);
     if(isWin())
@@ -52,9 +56,7 @@ void play(void) {
 	while (!os_GetCSC());
 }
 	
-void displayGrid(void) {
-	
-	uint8_t row, col;
+void gridDisplay(void) {
 	uint8_t i, j;
 	
 	//Make every other box gray
@@ -63,28 +65,7 @@ void displayGrid(void) {
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX, SUDOKUDRAWY + 60, 60, 60);
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX + 120, SUDOKUDRAWY + 60, 60, 60);
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX + 60, SUDOKUDRAWY + 120, 60, 60);
-		
-	for (row = 0; row < GRID_WIDTH; row ++) {
-		for (col = 0; col < GRID_WIDTH; col ++) {
-			
-			//if box is white, make text background white; if gray background - gray text background
-			fontlib_SetColors(BLACK, WHITE); 
-			
-			if ((row / 3 + 1 == 2 && (col / 3 + 1 == 1 || col / 3 + 1 == 3)) ||
-			    (col / 3 + 1 == 2 && (row / 3 + 1 == 1 || row / 3 + 1 == 3)))
-				fontlib_SetBackgroundColor(GRAY);
-				
-			if (playGrid[row][col] != UNASSIGNED) 
-			{
-				if (solvedGrid[row][col] != UNASSIGNED)
-					fontlib_SetForegroundColor(BLUE);
-				
-				fontlib_SetCursorPosition(col*20+SUDOKUDRAWX + 7, row*20+SUDOKUDRAWY);
-				fontlib_DrawUInt(solvedGrid[row][col], 1);
-			}
-		}
-	}
-	
+
 	//Draw the grid lines
 	gfx_SetColor(BLACK);
 	for(i = 1; i <= 10; i ++) {
@@ -92,5 +73,29 @@ void displayGrid(void) {
 	}
 	for(j = 1; j <= 10; j ++) {
 		gfx_Line_NoClip(SUDOKUDRAWX, 20*j + SUDOKUDRAWY - 20, SUDOKUDRAWX + 180, 20*j + SUDOKUDRAWY - 20);
+	}
+}
+
+void updateGrid(void)
+{
+	uint8_t row, col;
+	
+	for (row = 0; row < GRID_WIDTH; row ++) {
+		for (col = 0; col < GRID_WIDTH; col ++) {
+			if(grid[row][col][0] != UNASSIGNED) //dont show the values in the grid that are 0 -- leave them blank
+			{
+				//if box is white, make text background white. Default font color is black
+				fontlib_SetColors(BLACK, WHITE); 
+				
+				 //if gray background - gray text background
+				if ((row / 3 + 1 == 2 && (col / 3 + 1 == 1 || col / 3 + 1 == 3)) ||
+					(col / 3 + 1 == 2 && (row / 3 + 1 == 1 || row / 3 + 1 == 3))) fontlib_SetBackgroundColor(GRAY);
+				
+				if (grid[row][col][1] == 1) fontlib_SetForegroundColor(BLUE); //if number in grid position is embedded, change font color to blue
+			
+				fontlib_SetCursorPosition(col*20+SUDOKUDRAWX + 7, row*20+SUDOKUDRAWY);
+				fontlib_DrawUInt(grid[row][col][0], 1);
+			}
+		}
 	}
 }
