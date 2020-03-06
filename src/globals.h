@@ -16,7 +16,7 @@
 #define GRID_WIDTH 9 //Width (and height) of the Sudoku Puzzle grid
 #define BOX_WIDTH 3 //Size of each "box" in the grid
 
-#define LEVEL 45
+#define LEVEL 0
 
 /* 
 grid[...][...][0] is the number in the current grid position

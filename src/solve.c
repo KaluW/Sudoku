@@ -38,7 +38,7 @@ bool UsedInBox(uint8_t boxStartRow, uint8_t boxStartCol, uint8_t num) {
 	return false;
 }
 
-bool UsedInCol(uint8_t grid[GRID_WIDTH][GRID_WIDTH], uint8_t col, uint8_t num) {
+bool UsedInCol(uint8_t col, uint8_t num) {
 	uint8_t row;
 	for (row = 0; row < GRID_WIDTH; row ++)
 		if (grid[row][col][0] == num)
@@ -73,7 +73,7 @@ bool FindUnassignedLocation(uint8_t *rowp, uint8_t *colp) { //row pointer; colum
 	return false;
 }
 
-bool SolveSudoku(uint8_t grid[GRID_WIDTH][GRID_WIDTH]) {
+bool SolveSudoku(void) {
 	uint8_t row = 0, col = 0, num, sequence;
 	//displayGrid(grid);
 	if (!FindUnassignedLocation(&row, &col)) //No unassigned locations = solved
@@ -86,7 +86,7 @@ bool SolveSudoku(uint8_t grid[GRID_WIDTH][GRID_WIDTH]) {
 		if (isSafe(row, col, num)) {
 			grid[row][col][0] = num;
 			
-			if (SolveSudoku(grid))
+			if (SolveSudoku())
 				return true; //woohoo! We solved it!
 
 			grid[row][col][0] = UNASSIGNED; //failure, unmake & try again
@@ -97,7 +97,7 @@ bool SolveSudoku(uint8_t grid[GRID_WIDTH][GRID_WIDTH]) {
 
 void GenerateSudoku(void) {
 	uint8_t i, row, col;
-	for(i = 0; i <= LEVEL; i ++) {
+	for(i = 0; i < LEVEL; i ++) {
 		row = randInt(0,8);
 		col = randInt(0,8);
 		
@@ -105,7 +105,7 @@ void GenerateSudoku(void) {
 		// Sets grid[][][0] = 0 to establish the value of the grid position as '0'
 		// Sets grid[][][1] = 0 to establish that these values can be edited
 		grid[row][col][0] = UNASSIGNED;
-		grid[row][col][0] = UNASSIGNED;
+		grid[8-row][8-col][0] = UNASSIGNED;
 		grid[row][col][1] = 0;
 		grid[8-row][8-col][1] = 0;
 		
@@ -123,12 +123,13 @@ bool isWin(void)
 			//Have to set number in grid position to 0 in order to properly use the logic in isSafe()
 			num = grid[row][col][0];
 			grid[row][col][0] = UNASSIGNED;
+			
 			if(!isSafe(row, col, num))
 			{
-				solvedGrid[row][col][0] = num; //set it back to its original value
+				grid[row][col][0] = num; //set it back to its original value
 				return false; //no win
 			}
-			solvedGrid[row][col][0] = num; //set it back to its original value
+			grid[row][col][0] = num; //set it back to its original value
 		}
 	}
 	return true; //All values are safe - win!

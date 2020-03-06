@@ -57,8 +57,7 @@ void play(void) {
 }
 	
 void gridDisplay(void) {
-	uint8_t i, j;
-	
+
 	//Make every other box gray
 	gfx_SetColor(GRAY);
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX + 60, SUDOKUDRAWY, 60, 60);
@@ -66,19 +65,12 @@ void gridDisplay(void) {
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX + 120, SUDOKUDRAWY + 60, 60, 60);
 	gfx_FillRectangle_NoClip(SUDOKUDRAWX + 60, SUDOKUDRAWY + 120, 60, 60);
 
-	//Draw the grid lines
-	gfx_SetColor(BLACK);
-	for(i = 1; i <= 10; i ++) {
-		gfx_Line_NoClip(20*i + SUDOKUDRAWX - 20, SUDOKUDRAWY, 20*i + SUDOKUDRAWX - 20, SUDOKUDRAWY + 180);
-	}
-	for(j = 1; j <= 10; j ++) {
-		gfx_Line_NoClip(SUDOKUDRAWX, 20*j + SUDOKUDRAWY - 20, SUDOKUDRAWX + 180, 20*j + SUDOKUDRAWY - 20);
-	}
 }
 
 void updateGrid(void)
 {
 	uint8_t row, col;
+	uint8_t i, j;
 	
 	for (row = 0; row < GRID_WIDTH; row ++) {
 		for (col = 0; col < GRID_WIDTH; col ++) {
@@ -87,7 +79,7 @@ void updateGrid(void)
 				//if box is white, make text background white. Default font color is black
 				fontlib_SetColors(BLACK, WHITE); 
 				
-				 //if gray background - gray text background
+				 //if gray background -- gray text background
 				if ((row / 3 + 1 == 2 && (col / 3 + 1 == 1 || col / 3 + 1 == 3)) ||
 					(col / 3 + 1 == 2 && (row / 3 + 1 == 1 || row / 3 + 1 == 3))) fontlib_SetBackgroundColor(GRAY);
 				
@@ -97,5 +89,14 @@ void updateGrid(void)
 				fontlib_DrawUInt(grid[row][col][0], 1);
 			}
 		}
+	}
+	
+    //Draw the grid lines -- font overlaps grid lines, so must be redrawn each time
+	gfx_SetColor(BLACK);
+	for(i = 1; i <= 10; i ++) {
+		gfx_Line_NoClip(20*i + SUDOKUDRAWX - 20, SUDOKUDRAWY, 20*i + SUDOKUDRAWX - 20, SUDOKUDRAWY + 180);
+	}
+	for(j = 1; j <= 10; j ++) {
+		gfx_Line_NoClip(SUDOKUDRAWX, 20*j + SUDOKUDRAWY - 20, SUDOKUDRAWX + 180, 20*j + SUDOKUDRAWY - 20);
 	}
 }
