@@ -1,5 +1,6 @@
-output: c
+output: appvar
   include-file: gfx.h
+  name: SudokuS
   palettes:
     - global_palette
   converts:
@@ -10,6 +11,7 @@ palette: global_palette
 
 convert: sprites
   palette: global_palette
+  transparent-color-index: 0
   images:
     - one.png
     - two.png

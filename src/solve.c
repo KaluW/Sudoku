@@ -1,9 +1,7 @@
 #include "solve.h"
 #include "globals.h"
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
-#include <tice.h>
 
 uint8_t grid[GRID_WIDTH][GRID_WIDTH][2] = {
 	{{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1}},
@@ -16,9 +14,44 @@ uint8_t grid[GRID_WIDTH][GRID_WIDTH][2] = {
 	{{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1}},
 	{{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1},{0,1}}
 };
-uint8_t seq[GRID_WIDTH] = {1,4,7,3,6,9,2,5,8}; //used for generating puzzles
 
-void randSeq(void) {
+bool SolveSudoku(void) {
+	uint8_t row = 0, col = 0, num, sequence;
+	uint8_t seq[9] = {1,2,3,4,5,6,7,8,9}; //array ("sequence" - seq) of numbers used to randomnize puzzle generation.
+
+	if (!FindUnassignedLocation(&row, &col)) return true;  //No unassigned locations = solved
+	
+	randSeq(seq);		
+	for (sequence = 0; sequence < 9; sequence ++)
+	{
+		
+		num = seq[sequence];
+		
+		if (isSafe(row, col, num))
+		{
+			grid[row][col][0] = num;
+			
+			if (SolveSudoku()) return true; //woohoo! We solved it!
+
+			grid[row][col][0] = UNASSIGNED; //failure, unmake & try again
+		}
+	}
+	return false; // this triggers backtrackiing
+}
+
+bool FindUnassignedLocation(uint8_t *rowp, uint8_t *colp) { //row pointer; column pointer
+	uint8_t row, col;
+	for (row = 0; row < GRID_WIDTH; row ++)
+		for (col = 0; col < GRID_WIDTH; col ++)
+			if (grid[row][col][0] == UNASSIGNED) {
+				*rowp = row;
+				*colp = col; 
+				return true;
+			}
+	return false;
+}
+
+void randSeq(uint8_t *seq) {
 	uint8_t a, b, i, rand;
 	for(i = 0; i <= 8; i ++) {
 		rand = randInt(0,8);
@@ -28,6 +61,14 @@ void randSeq(void) {
 		seq[rand] = a;
 	}
 }
+
+bool isSafe(uint8_t row, uint8_t col, uint8_t num) {
+	return !UsedInRow(row, num) &&
+		   !UsedInCol(col, num) &&
+		   !UsedInBox(row - row%BOX_WIDTH, col - col%BOX_WIDTH, num) &&
+			grid[row][col][0] == UNASSIGNED;
+}
+
 
 bool UsedInBox(uint8_t boxStartRow, uint8_t boxStartCol, uint8_t num) {
 	uint8_t row, col;
@@ -54,50 +95,10 @@ bool UsedInRow(uint8_t row, uint8_t num) {
 	return false;
 }
 
-bool isSafe(uint8_t row, uint8_t col, uint8_t num) {
-	return !UsedInRow(row, num) &&
-		   !UsedInCol(col, num) &&
-		   !UsedInBox(row - row%BOX_WIDTH, col - col%BOX_WIDTH, num) &&
-			grid[row][col][0] == UNASSIGNED;
-}
-
-bool FindUnassignedLocation(uint8_t *rowp, uint8_t *colp) { //row pointer; column pointer
-	uint8_t row, col;
-	for (row = 0; row < GRID_WIDTH; row ++)
-		for (col = 0; col < GRID_WIDTH; col ++)
-			if (grid[row][col][0] == UNASSIGNED) {
-				*rowp = row;
-				*colp = col; 
-				return true;
-			}
-	return false;
-}
-
-bool SolveSudoku(void) {
-	uint8_t row = 0, col = 0, num, sequence;
-	//displayGrid(grid);
-	if (!FindUnassignedLocation(&row, &col)) //No unassigned locations = solved
-			return true;
-	randSeq();		
-	for (sequence = 0; sequence < 9; sequence ++) {
-		
-		num = seq[sequence];
-		
-		if (isSafe(row, col, num)) {
-			grid[row][col][0] = num;
-			
-			if (SolveSudoku())
-				return true; //woohoo! We solved it!
-
-			grid[row][col][0] = UNASSIGNED; //failure, unmake & try again
-		}
-	}
-	return false; // this triggers backtrackiing
-}
 
 void GenerateSudoku(void) {
 	uint8_t i, row, col;
-	for(i = 0; i < LEVEL; i ++) {
+	for(i = 0; i < level; i ++) {
 		row = randInt(0,8);
 		col = randInt(0,8);
 		
