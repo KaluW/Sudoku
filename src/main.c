@@ -11,14 +11,14 @@
 #include <fileioc.h>
 #include <fontlibc.h>
 
+#include "font/font.h"
+
 #include "globals.h"
 #include "solve.h"
 #include "gameplay.h"
 
-#include "font/font.h"
-
 void menu(void);
-	
+
 uint16_t level = 15;
 
 void main()
