@@ -19,7 +19,7 @@
 
 void menu(void);
 
-uint16_t level = 15;
+uint16_t level = 30;
 
 void main()
 {

@@ -9,6 +9,7 @@
 #define BLUE 24 //Embedded numbers - numbers you can't change
 #define GRAY 222 //Pause menu background?
 #define RED 224 //Invalid numbers -- applies to the font color
+#define ORANGE 226
 #define WHITE 255
 
 #define SUDOKUDRAWX 20 //Draw Position of Sudoku Grid.
